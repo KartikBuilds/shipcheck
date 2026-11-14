@@ -1,7 +1,5 @@
 import { getEnv } from "@/lib/env";
 
-export const dynamic = "force-dynamic";
-
 /** Liveness and database reachability, for uptime monitoring. Reveals nothing sensitive. */
 export async function GET() {
   const started = Date.now();
