@@ -1,36 +1,42 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ShipCheck
 
-## Getting Started
+A small launch-blocker tracker for app teams. It is a **personal portfolio project** by Kartik Shinde, built to show a production-style Next.js + Supabase + Stripe setup end to end.
 
-First, run the development server:
+> Payments run in **Stripe test mode only**. No real money is involved.
+
+## What it demonstrates
+
+| Area | How it is done | Where |
+| --- | --- | --- |
+| Auth | Supabase email + password, session refreshed in the Next.js proxy, `/dashboard` protected | `src/proxy.ts`, `src/app/login` |
+| Data isolation | Postgres Row Level Security: users can only read and change their own rows | `supabase/migrations/0001_init.sql` |
+| Business rule in the database | Free plan limited to 20 issues by a trigger, so the UI cannot be bypassed | same migration |
+| Payments | Stripe Checkout (subscription) tied to the user with `client_reference_id` | `src/app/api/checkout/route.ts` |
+| Webhooks | Signature verified on the raw body; idempotent via a unique event-id table; plan changes mapped by a pure, tested function | `src/app/api/stripe/webhook/route.ts`, `src/lib/billing.ts` |
+| Config safety | Environment validated at startup; live Stripe keys rejected | `src/lib/env.ts` |
+| Server-only secrets | Service-role key used only inside the webhook, never in the browser | `src/lib/supabase/server.ts` |
+
+## Tests
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm test          # 13 unit tests: validation, sorting, billing mapping, webhook signatures, env checks
+npm run test:db   # 6 database security checks against real PostgreSQL (needs local psql access)
+npm run type-check && npm run lint && npm run build
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The database checks prove that a user cannot insert rows for someone else, cannot read, update or delete other users' rows, is stopped at 20 issues on the free plan, is not stopped on Pro, and cannot read the Stripe event log.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Run locally
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. Create a Supabase project and run `supabase/migrations/0001_init.sql` in its SQL editor.
+2. Copy `.env.example` to `.env.local` and fill in the values (Stripe test keys only).
+3. `npm install --legacy-peer-deps && npm run dev`
+4. For webhooks locally: `stripe listen --forward-to localhost:3000/api/stripe/webhook`
 
-## Learn More
+## Stack
 
-To learn more about Next.js, take a look at the following resources:
+Next.js 16 (App Router, server actions), React 19, TypeScript, Tailwind CSS, Supabase (Postgres, Auth, RLS), Stripe, Zod, Vitest.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## How it was built
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Written with AI coding assistance; every change was reviewed and tested before commit.
