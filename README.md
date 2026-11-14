@@ -19,7 +19,7 @@ A small launch-blocker tracker for app teams. It is a **personal portfolio proje
 ## Tests
 
 ```bash
-npm test          # 13 unit tests: validation, sorting, billing mapping, webhook signatures, env checks
+npm test          # 14 unit tests: validation, sorting, billing mapping, webhook signatures, env checks
 npm run test:db   # 6 database security checks against real PostgreSQL (needs local psql access)
 npm run type-check && npm run lint && npm run build
 ```

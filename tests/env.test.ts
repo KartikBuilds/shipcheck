@@ -7,6 +7,9 @@ describe("getEnv", () => {
   it("accepts the minimum configuration", () => {
     expect(getEnv(base).NEXT_PUBLIC_SITE_URL).toBe("http://localhost:3000");
   });
+  it("falls back to the public demo project", () => {
+    expect(getEnv({}).NEXT_PUBLIC_SUPABASE_URL).toMatch(/supabase\.co$/);
+  });
   it("refuses live Stripe keys", () => {
     expect(() => getEnv({ ...base, STRIPE_SECRET_KEY: "sk_live_123" })).toThrow(/TEST key/);
   });

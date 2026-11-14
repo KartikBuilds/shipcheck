@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { PUBLIC_SUPABASE_KEY, PUBLIC_SUPABASE_URL } from "./public-config";
 
 const schema = z.object({
   NEXT_PUBLIC_SUPABASE_URL: z.string().url(),
@@ -14,7 +15,11 @@ export type Env = z.infer<typeof schema>;
 
 /** Validates environment variables once; fails fast with a readable message. */
 export function getEnv(source: Record<string, string | undefined> = process.env): Env {
-  const parsed = schema.safeParse(source);
+  const parsed = schema.safeParse({
+    NEXT_PUBLIC_SUPABASE_URL: PUBLIC_SUPABASE_URL,
+    NEXT_PUBLIC_SUPABASE_ANON_KEY: PUBLIC_SUPABASE_KEY,
+    ...Object.fromEntries(Object.entries(source).filter(([, v]) => v !== undefined && v !== "")),
+  });
   if (!parsed.success) {
     const issues = parsed.error.issues.map((i) => `${i.path.join(".")}: ${i.message}`).join("; ");
     throw new Error(`Invalid environment: ${issues}`);
