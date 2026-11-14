@@ -19,9 +19,11 @@ export async function signUp(formData: FormData) {
   const parsed = credentials.safeParse(Object.fromEntries(formData));
   if (!parsed.success) redirect("/login?error=Enter a valid email and an 8%2B character password");
   const supabase = await supabaseForUser();
-  const { error } = await supabase.auth.signUp(parsed.data);
+  const { data, error } = await supabase.auth.signUp(parsed.data);
   if (error) redirect(`/login?error=${encodeURIComponent(error.message)}`);
-  redirect("/login?message=Check your email to confirm, then sign in");
+  // With email confirmation off, Supabase returns a session right away: go straight in.
+  if (data.session) redirect("/dashboard");
+  redirect("/login?message=Check your email to confirm your account, then sign in");
 }
 
 export async function signOut() {

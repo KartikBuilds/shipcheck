@@ -2,7 +2,11 @@
 
 A small launch-blocker tracker for app teams. It is a **personal portfolio project** by Kartik Shinde, built to show a production-style Next.js + Supabase + Stripe setup end to end.
 
+**Live demo:** https://shipcheck-46xw.vercel.app (demo login: `demo@shipcheck-demo.com` / `ShipCheckDemo2026`)
+
 > Payments run in **Stripe test mode only**. No real money is involved.
+
+![ShipCheck landing page](docs/landing.png)
 
 ## What it demonstrates
 
@@ -21,6 +25,7 @@ A small launch-blocker tracker for app teams. It is a **personal portfolio proje
 ```bash
 npm test          # 14 unit tests: validation, sorting, billing mapping, webhook signatures, env checks
 npm run test:db   # 6 database security checks against real PostgreSQL (needs local psql access)
+npm run test:e2e  # 3 browser tests x desktop + mobile: landing, route protection, sign up -> add -> close a blocker
 npm run type-check && npm run lint && npm run build
 ```
 
@@ -35,8 +40,4 @@ The database checks prove that a user cannot insert rows for someone else, canno
 
 ## Stack
 
-Next.js 16 (App Router, server actions), React 19, TypeScript, Tailwind CSS, Supabase (Postgres, Auth, RLS), Stripe, Zod, Vitest.
-
-## How it was built
-
-Written with AI coding assistance; every change was reviewed and tested before commit.
+Next.js 16 (App Router, server actions), React 19, TypeScript, Tailwind CSS, Supabase (Postgres, Auth, RLS), Stripe, Zod, Vitest, Playwright.
