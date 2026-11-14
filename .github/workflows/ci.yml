@@ -34,7 +34,7 @@ jobs:
         with: { node-version: 22, cache: npm }
       - run: npm ci --legacy-peer-deps
       - uses: supabase/setup-cli@v1
-        with: { version: latest }
+        with: { version: 3.1.0 }
       - name: Start isolated Supabase (migrations + seed)
         run: supabase start -x studio,imgproxy,edge-runtime,logflare,vector,realtime,storage-api,supavisor,mailpit
       - name: Point the app at it
