@@ -9,7 +9,7 @@ jobs:
       - name: Live site and database respond
         run: |
           for i in 1 2 3; do
-            code=$(curl -s -o body.json -w "%{http_code}" --max-time 20 https://shipcheck-46xw.vercel.app/api/health) && [ "$code" = "200" ] && cat body.json && exit 0
+            code=$(curl -s -o body.json -w "%{http_code}" --max-time 20 https://shipcheck-kartik.vercel.app/api/health) && [ "$code" = "200" ] && cat body.json && exit 0
             sleep 20
           done
           echo "Health check failed with HTTP $code"; cat body.json; exit 1

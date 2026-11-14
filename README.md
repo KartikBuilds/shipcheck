@@ -2,7 +2,7 @@
 
 A small launch-blocker tracker for app teams. It is a **personal portfolio project** by Kartik Shinde, built to show a production-style Next.js + Supabase + Stripe setup end to end.
 
-**Live demo:** https://shipcheck-46xw.vercel.app (demo login: `demo@shipcheck-demo.com` / `ShipCheckDemo2026`)
+**Live demo:** https://shipcheck-kartik.vercel.app (demo login: `demo@shipcheck-demo.com` / `ShipCheckDemo2026`)
 
 > Payments run in **Stripe test mode only**. No real money is involved.
 
