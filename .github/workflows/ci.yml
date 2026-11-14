@@ -25,3 +25,34 @@ jobs:
       - run: npm test
       - run: npm run test:db
       - run: npm run build
+  e2e:
+    # Browser, accessibility and concurrency tests against a throwaway local Supabase. Never touches the live site.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci --legacy-peer-deps
+      - uses: supabase/setup-cli@v1
+        with: { version: latest }
+      - name: Start isolated Supabase (migrations + seed)
+        run: supabase start -x studio,imgproxy,edge-runtime,logflare,vector,realtime,storage-api,supavisor,mailpit
+      - name: Point the app at it
+        run: |
+          supabase status -o env > .supabase.env
+          set -a; . ./.supabase.env; set +a
+          KEY="${PUBLISHABLE_KEY:-$ANON_KEY}"
+          echo "NEXT_PUBLIC_SUPABASE_URL=$API_URL" >> "$GITHUB_ENV"
+          echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=$KEY" >> "$GITHUB_ENV"
+          echo "E2E_SUPABASE_URL=$API_URL" >> "$GITHUB_ENV"
+          echo "E2E_SUPABASE_KEY=$KEY" >> "$GITHUB_ENV"
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - name: Browser tests
+        run: |
+          npm start -- -p 3000 &
+          npx wait-on -t 60000 http://localhost:3000
+          E2E_BASE_URL=http://localhost:3000 npx playwright test
+      - if: failure()
+        uses: actions/upload-artifact@v4
+        with: { name: playwright-report, path: test-results, retention-days: 7 }
